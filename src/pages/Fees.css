@@ -1,0 +1,63 @@
+.fees-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-content {
+  min-height: 150px;
+  margin-top: 1.5rem;
+}
+
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.month-chip {
+  padding: 0.5rem;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+}
+
+.month-chip:hover {
+  background: var(--bg-main);
+}
+
+.month-chip.selected {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+}
+
+.overdue-card {
+  border-top: 4px solid var(--danger);
+}
+
+.overdue-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.overdue-item:last-child {
+  border-bottom: none;
+}
+
+.overdue-item h4 { margin: 0 0 0.25rem 0; }
+.overdue-item p { margin: 0; font-size: 0.875rem; color: var(--text-secondary); }

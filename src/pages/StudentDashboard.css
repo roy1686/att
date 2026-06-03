@@ -1,0 +1,132 @@
+.student-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.back-btn {
+  align-self: flex-start;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  background: var(--bg-main);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.profile-header h1 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.5rem;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1.5rem;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.summary-stats {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+}
+
+.summary-stats h3 {
+  font-size: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+.mt-4 { margin-top: 1.5rem; }
+
+.progress-container {
+  width: 100%;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-main);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--success);
+  transition: width 0.5s ease-out;
+}
+
+/* Timeline */
+.timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.timeline-item {
+  text-align: center;
+  padding: 1rem 0.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+}
+
+.timeline-item.paid { border-color: var(--success); background: var(--success-bg); }
+.timeline-item.partial { border-color: var(--warning); background: var(--warning-bg); }
+.timeline-item.unpaid { border-color: var(--danger); background: var(--danger-bg); }
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 0.5rem auto;
+}
+
+.paid .status-indicator { background: var(--success); }
+.partial .status-indicator { background: var(--warning); }
+.unpaid .status-indicator { background: var(--danger); }
+
+.month-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.status-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
