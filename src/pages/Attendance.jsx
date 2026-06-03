@@ -142,7 +142,15 @@ export default function Attendance() {
   }
 
   const sendWhatsApp = (student) => {
-    const msg = `Dear Parent, your child ${student.name} was absent on ${today}. Please ensure regular attendance.`;
+    const msg = `Dear Parent,
+
+This is to inform you that your ward ${student.name} was absent in GIST Computer on ${today}.
+
+Please ensure regular attendance.
+
+With regards,
+Pravat Hota
+GIST Computer Education`;
     const encodedMsg = encodeURIComponent(msg);
     let phone = student.parent_phone || student.phone;
     if (phone && !phone.startsWith('91') && phone.length === 10) {
