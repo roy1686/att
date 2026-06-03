@@ -1,0 +1,104 @@
+.intro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  animation: fadeInBackground 5s ease-in-out;
+}
+
+.intro-content {
+  text-align: center;
+  color: white;
+  animation: slideUp 1.5s ease-out;
+}
+
+.intro-title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin: 0 0 1rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  animation: fadeInScale 1.5s ease-out;
+}
+
+.intro-subtitle {
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+  opacity: 0.9;
+  animation: fadeInScale 1.8s ease-out;
+}
+
+.intro-author {
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  opacity: 0.8;
+  font-style: italic;
+  animation: fadeInScale 2.1s ease-out;
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  margin: 2rem auto 0;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation for fade out and transition to dashboard */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Fade in animation for dashboard */
+@keyframes fadeInDashboard {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
