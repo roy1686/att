@@ -1,11 +1,19 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
 import './Layout.css';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isAdmin = localStorage.getItem('isAdmin');
+    if (isAdmin !== 'true') {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   return (
     <div className="layout-container">

@@ -8,12 +8,14 @@ import Attendance from './pages/Attendance';
 import Fees from './pages/Fees';
 import StudentDashboard from './pages/StudentDashboard';
 import Exams from './pages/Exams';
+import Login from './pages/Login';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Intro />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Layout />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<Courses />} />

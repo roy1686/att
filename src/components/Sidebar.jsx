@@ -1,5 +1,5 @@
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCheck, BookOpen, CreditCard, ClipboardList, X } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Users, UserCheck, BookOpen, CreditCard, ClipboardList, X, LogOut } from 'lucide-react';
 import './Sidebar.css';
 
 const navItems = [
@@ -12,6 +12,13 @@ const navItems = [
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAdmin');
+    navigate('/login');
+  };
+
   return (
     <>
       <div className={`sidebar-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}></div>
@@ -36,6 +43,11 @@ export default function Sidebar({ isOpen, onClose }) {
               <span>{item.label}</span>
             </NavLink>
           ))}
+          
+          <button className="nav-link" style={{ background: 'transparent', border: 'none', color: 'var(--danger)', marginTop: 'auto', textAlign: 'left', width: '100%', cursor: 'pointer' }} onClick={handleLogout}>
+            <LogOut size={20} />
+            <span>Logout</span>
+          </button>
         </nav>
       </aside>
     </>
