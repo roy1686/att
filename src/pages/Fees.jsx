@@ -17,6 +17,13 @@ export default function Fees() {
   const [paymentType, setPaymentType] = useState('Monthly Fee');
   const [selectedMonths, setSelectedMonths] = useState([]);
   const [amountPaid, setAmountPaid] = useState('');
+  const [receiptNumber, setReceiptNumber] = useState('');
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
+  
+  // Step 1 Filters
+  const [searchStudent, setSearchStudent] = useState('');
+  const [filterCourse, setFilterCourse] = useState('');
+  const [filterBatch, setFilterBatch] = useState('');
 
   useEffect(() => {
     fetchStudents();
@@ -40,6 +47,11 @@ export default function Fees() {
     setPaymentType('Monthly Fee');
     setSelectedMonths([]);
     setAmountPaid('');
+    setReceiptNumber('');
+    setPaymentDate(new Date().toISOString().split('T')[0]);
+    setSearchStudent('');
+    setFilterCourse('');
+    setFilterBatch('');
   };
 
   const toggleMonth = (month) => {
@@ -55,12 +67,21 @@ export default function Fees() {
       amount_paid: parseFloat(amountPaid),
       payment_type: paymentType,
       months_paid: paymentType === 'Monthly Fee' ? selectedMonths : [],
-      payment_date: new Date().toISOString().split('T')[0]
+      receipt_number: receiptNumber || null,
+      payment_date: paymentDate
     };
 
-    await supabase.from('fee_payments').insert(payload);
-    closeModal();
-    // In a full implementation, you'd refresh the overdue logic here
+    const { error } = await supabase.from('fee_payments').insert(payload);
+    
+    if (error) {
+      alert("Error adding payment: " + error.message);
+      console.error(error);
+    } else {
+      closeModal();
+      alert("Payment added successfully!");
+      // Refresh the page or fetch data to update UI
+      fetchStudents();
+    }
   };
 
   // Mock overdue list for demonstration since complex SQL joins are needed
@@ -73,6 +94,16 @@ export default function Fees() {
     if (phone && !phone.startsWith('91') && phone.length === 10) phone = '91' + phone;
     window.open(`https://wa.me/${phone}?text=${encodedMsg}`, '_blank');
   };
+
+  const uniqueCourses = [...new Set(students.map(s => s.courses?.course_name).filter(Boolean))];
+  const uniqueBatches = [...new Set(students.map(s => s.batch).filter(Boolean))];
+
+  const filteredModalStudents = students.filter(s => {
+    const matchesSearch = s.name.toLowerCase().includes(searchStudent.toLowerCase());
+    const matchesCourse = filterCourse ? s.courses?.course_name === filterCourse : true;
+    const matchesBatch = filterBatch ? s.batch === filterBatch : true;
+    return matchesSearch && matchesCourse && matchesBatch;
+  });
 
   return (
     <div className="fees-page animate-fade-in">
@@ -137,11 +168,32 @@ export default function Fees() {
             <form onSubmit={handlePaymentSubmit}>
               {modalStep === 1 && (
                 <div className="step-content">
+                  <div className="filters card" style={{ padding: '1rem', marginBottom: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div className="form-group" style={{ marginBottom: 0, flex: 1 }}>
+                      <label>Search Name</label>
+                      <input type="text" placeholder="Type name..." value={searchStudent} onChange={e => setSearchStudent(e.target.value)} />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0, flex: 1 }}>
+                      <label>Filter Course</label>
+                      <select value={filterCourse} onChange={e => setFilterCourse(e.target.value)}>
+                        <option value="">All Courses</option>
+                        {uniqueCourses.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0, flex: 1 }}>
+                      <label>Filter Batch</label>
+                      <select value={filterBatch} onChange={e => setFilterBatch(e.target.value)}>
+                        <option value="">All Batches</option>
+                        {uniqueBatches.map(b => <option key={b} value={b}>{b}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  
                   <div className="form-group">
                     <label>Select Student</label>
-                    <select required value={selectedStudent} onChange={e => setSelectedStudent(e.target.value)}>
-                      <option value="">-- Choose Student --</option>
-                      {students.map(s => <option key={s.id} value={s.id}>{s.name} ({s.batch})</option>)}
+                    <select required value={selectedStudent} onChange={e => setSelectedStudent(e.target.value)} size={5} style={{ height: 'auto' }}>
+                      {filteredModalStudents.length === 0 && <option disabled>No students match filters</option>}
+                      {filteredModalStudents.map(s => <option key={s.id} value={s.id}>{s.name} ({s.batch || 'No Batch'} - {s.courses?.course_name || 'No Course'})</option>)}
                     </select>
                   </div>
                 </div>
@@ -181,6 +233,14 @@ export default function Fees() {
                   <div className="form-group">
                     <label>Amount Paid (₹)</label>
                     <input required type="number" min="1" value={amountPaid} onChange={e => setAmountPaid(e.target.value)} placeholder="Enter amount..." />
+                  </div>
+                  <div className="form-group">
+                    <label>Receipt Number</label>
+                    <input type="text" value={receiptNumber} onChange={e => setReceiptNumber(e.target.value)} placeholder="e.g. REC-1001" />
+                  </div>
+                  <div className="form-group">
+                    <label>Payment Date</label>
+                    <input required type="date" value={paymentDate} onChange={e => setPaymentDate(e.target.value)} />
                   </div>
                 </div>
               )}

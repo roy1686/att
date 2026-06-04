@@ -7,6 +7,7 @@ import Students from './pages/Students';
 import Attendance from './pages/Attendance';
 import Fees from './pages/Fees';
 import StudentDashboard from './pages/StudentDashboard';
+import Exams from './pages/Exams';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="students" element={<Students />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="fees" element={<Fees />} />
+          <Route path="exams" element={<Exams />} />
           <Route path="student/:id" element={<StudentDashboard />} />
         </Route>
       </Routes>

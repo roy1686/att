@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCheck, BookOpen, CreditCard, X } from 'lucide-react';
+import { LayoutDashboard, Users, UserCheck, BookOpen, CreditCard, ClipboardList, X } from 'lucide-react';
 import './Sidebar.css';
 
 const navItems = [
@@ -8,6 +8,7 @@ const navItems = [
   { path: '/students', label: 'Students', icon: Users },
   { path: '/attendance', label: 'Attendance', icon: UserCheck },
   { path: '/fees', label: 'Fees', icon: CreditCard },
+  { path: '/exams', label: 'Exams', icon: ClipboardList },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {

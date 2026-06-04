@@ -5,16 +5,22 @@ import { Plus, Edit2, Trash2 } from 'lucide-react';
 export default function Students() {
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [batches, setBatches] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ id: null, name: '', batch: '', course_id: '', phone: '', parent_phone: '', admission_date: '' });
+  const [formData, setFormData] = useState({ id: null, name: '', roll_no: '', batch: '', course_id: '', phone: '', parent_phone: '', admission_date: new Date().toISOString().split('T')[0] });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterBatch, setFilterBatch] = useState('');
 
   useEffect(() => {
     fetchData();
   }, []);
 
   async function fetchData() {
-    const { data: cData } = await supabase.from('courses').select('id, course_name');
+    const { data: cData } = await supabase.from('courses').select('*').order('course_name');
     if (cData) setCourses(cData);
+    
+    const { data: bData } = await supabase.from('batches').select('*').order('batch_name');
+    if (bData) setBatches(bData);
 
     const { data: sData } = await supabase.from('students').select(`
       *,
@@ -29,10 +35,11 @@ export default function Students() {
       setFormData({
         ...student,
         course_id: student.course_id || '',
-        admission_date: student.admission_date || ''
+        admission_date: student.admission_date || '',
+        roll_no: student.roll_no || ''
       });
     } else {
-      setFormData({ id: null, name: '', batch: '', course_id: '', phone: '', parent_phone: '', admission_date: new Date().toISOString().split('T')[0] });
+      setFormData({ id: null, name: '', roll_no: '', batch: '', course_id: '', phone: '', parent_phone: '', admission_date: new Date().toISOString().split('T')[0] });
     }
     setIsModalOpen(true);
   };
@@ -43,21 +50,29 @@ export default function Students() {
     e.preventDefault();
     const payload = {
       name: formData.name,
+      roll_no: formData.roll_no || null,
       batch: formData.batch,
       course_id: formData.course_id || null,
-      phone: formData.phone,
-      parent_phone: formData.parent_phone,
+      course: formData.course_id || 'N/A', // Bypasses the legacy DB NOT NULL constraint
+      phone: formData.phone || 'N/A',
+      parent_phone: formData.parent_phone || 'N/A',
       admission_date: formData.admission_date || null
     };
 
+    let response;
     if (formData.id) {
-      await supabase.from('students').update(payload).eq('id', formData.id);
+      response = await supabase.from('students').update(payload).eq('id', formData.id);
     } else {
-      await supabase.from('students').insert(payload);
+      response = await supabase.from('students').insert(payload);
     }
     
-    closeModal();
-    fetchData();
+    if (response.error) {
+      alert("Error saving student: " + response.error.message);
+      console.error(response.error);
+    } else {
+      closeModal();
+      fetchData();
+    }
   };
 
   const handleDelete = async (id) => {
@@ -66,6 +81,14 @@ export default function Students() {
       fetchData();
     }
   };
+
+  const uniqueBatches = [...new Set(students.map(s => s.batch).filter(Boolean))];
+
+  const filteredStudents = students.filter(student => {
+    const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesBatch = filterBatch ? student.batch === filterBatch : true;
+    return matchesSearch && matchesBatch;
+  });
 
   return (
     <div className="students-page animate-fade-in">
@@ -76,10 +99,30 @@ export default function Students() {
         </button>
       </div>
 
+      <div className="filters card" style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div className="form-group" style={{ marginBottom: 0, flex: 1, minWidth: '200px' }}>
+          <label>Search Student</label>
+          <input 
+            type="text" 
+            placeholder="Type student name..." 
+            value={searchQuery} 
+            onChange={(e) => setSearchQuery(e.target.value)} 
+          />
+        </div>
+        <div className="form-group" style={{ marginBottom: 0, flex: 1, minWidth: '200px' }}>
+          <label>Filter by Batch</label>
+          <select value={filterBatch} onChange={(e) => setFilterBatch(e.target.value)}>
+            <option value="">All Batches</option>
+            {uniqueBatches.map(b => <option key={b} value={b}>{b}</option>)}
+          </select>
+        </div>
+      </div>
+
       <div className="card table-container" style={{ marginTop: '1.5rem' }}>
         <table>
           <thead>
             <tr>
+              <th>Roll No</th>
               <th>Name</th>
               <th>Batch</th>
               <th>Course</th>
@@ -90,11 +133,12 @@ export default function Students() {
             </tr>
           </thead>
           <tbody>
-            {students.map(student => (
+            {filteredStudents.map(student => (
               <tr key={student.id}>
+                <td>{student.roll_no || '-'}</td>
                 <td><strong>{student.name}</strong></td>
-                <td>{student.batch}</td>
-                <td>{student.courses?.course_name || '-'}</td>
+                <td><span className="badge badge-success">{student.batch}</span></td>
+                <td>{student.courses?.course_name || 'N/A'}</td>
                 <td>{student.phone || '-'}</td>
                 <td>{student.parent_phone || '-'}</td>
                 <td>{student.admission_date || '-'}</td>
@@ -110,9 +154,9 @@ export default function Students() {
                 </td>
               </tr>
             ))}
-            {students.length === 0 && (
+            {filteredStudents.length === 0 && (
               <tr>
-                <td colSpan="7" style={{ textAlign: 'center' }}>No students found.</td>
+                <td colSpan="8" style={{ textAlign: 'center' }}>No students found.</td>
               </tr>
             )}
           </tbody>
@@ -125,12 +169,21 @@ export default function Students() {
             <h2>{formData.id ? 'Edit Student' : 'Add Student'}</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Name</label>
+                <label>Student Name</label>
                 <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
               </div>
               <div className="form-group">
+                <label>Roll No</label>
+                <input type="text" value={formData.roll_no} onChange={e => setFormData({...formData, roll_no: e.target.value})} />
+              </div>
+              <div className="form-group">
                 <label>Batch Name</label>
-                <input type="text" value={formData.batch} onChange={e => setFormData({...formData, batch: e.target.value})} />
+                <select required value={formData.batch} onChange={e => setFormData({...formData, batch: e.target.value})}>
+                  <option value="">-- Select Batch --</option>
+                  {batches.map(b => (
+                    <option key={b.id} value={b.batch_name}>{b.batch_name}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>Course</label>
